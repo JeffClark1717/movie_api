@@ -26,7 +26,7 @@ let topMovies = [
     {
       title: 'Shawshank Redemption',
       year: '1994',
-      genre: 'Drama.Crime',
+      genre: 'Drama/Crime',
     },
     {
       title: 'Good Will Hunting',
