@@ -1,0 +1,23 @@
+/* styles.css */
+
+/* Add a border to all elements */
+* {
+    border: 1px solid #333;
+  }
+  
+  /* Increase readability with padding and margin */
+  body {
+    padding: 20px;
+    margin: 20px;
+  }
+  
+  /* Set a background color */
+  body {
+    background-color: #f9f9f9;
+  }
+  
+  /* Add box-shadow to elements */
+  div, p, h1, h2, h3, h4, h5, h6 {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
