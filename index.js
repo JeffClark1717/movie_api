@@ -2,221 +2,19 @@ const express = require('express');
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
-const app = express();
 const bodyParser = require('body-parser');
-const uuid = require('uuid');
+const app = express();
 const mongoose = require('mongoose');
 const Models = require('./models.js');
-const { update } = require('lodash');
 const Movies = Models.Movie;
 const Users = Models.User;
-
-mongoose.connect('mongodb://localhost:27017/nfDB', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-let users = [
-  {
-    _id: 1,
-    Username: 'Dliv',
-    Password: 'Dliv1',
-    Email: 'Dlivisthegoat@gmail.com',
-    Birthday: ("1989-03-23T00:00:00.000Z")
-  },
-  {
-    _id: 3,
-    Username: 'Jeffawee',
-    Password: 'Jeffiscool',
-    Email: 'jeffawee@gmail.com',
-    Birthday: ("1990-02-02T00:00:00.000Z"),
-    FavouriteMovies: [ ]
-  },
-  {
-    _id: 4,
-    Username: 'Nashyboy',
-    Password: 'ILOVEROCKS',
-    Email: 'Nashyboy@gmail.com',
-    Birthday: ("2019-02-13T00:00:00.000Z")
-  },
-  {
-    _id: ("648b6e93c193c47998e76985"),
-    Username: 'Opiebear',
-    Password: 'Ilovenaps',
-    Email: 'Chillsenor@gmail.com',
-    Birthday: ("2018-02-28T00:00:00.000Z")
-  }
-];
+mongoose.connect('mongodb://127.0.0.1:27017/cfDB');
 
-let movies = [
-{
-  _id: ("6488d8b8f35940600868528d"),
-  Title: 'Silence of the Lambs',
-  Description: 'A young FBI cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer.',
-  Genre: {
-    Name: 'Thriller',
-    Description: 'Thriller film, also known as suspense film or suspense thriller, is a broad film genre that involves excitement and suspense in the audience.'
-  },
-  Director: {
-    Name: 'Jonathan Demme',
-    Bio: 'Robert Jonathan Demme was an American director, producer, and screenwriter.',
-    Birth: '1944',
-    Death: '2017'
-  },
-  ImagePath: 'silenceofthelambs.png',
-  Featured: true
-},
-{
-  _id: ("648a25b28d925836d83d5c21"),
-  Title: 'Step Brothers',
-  Description: 'Two 40 year old losers are forced to become roommates when their parents marry eachother,',
-  Genre: {
-    Name: 'Comedy',
-    Description: 'Movies intended to elicit laughter.'
-  },
-  Director: 'Adam Mckay',
-  ImagePath: 'Stepbrothers.png',
-  Featured: true,
-  Bio: [ 'Adam McKay is an american director.' ]
-},
-{
-  _id: ("648a27ba8d925836d83d5c22"),
-  Title: 'Anchorman',
-  Description: 'In the 1970s, an anchormans stint as San Diegos top rated newsreader is challenged when an ambitious newswoman becomes his co-anchor.',
-  Genre: {
-    Name: 'Comedy',
-    Description: 'Movies intended to elicit laughter.'
-  },
-  Director: {
-    Name: 'Adam Mckay',
-    Bio: 'Adam Mckay is an american director.',
-    Birth: '1973'
-  },
-  ImagePath: 'anchorman.png',
-  Featured: true
-},
-{
-  _id: ("648b59618d925836d83d5c23"),
-  Title: 'Superbad',
-  Description: 'Two codependent high school seniors are forced to deal with seperation anxiety after their plans to stage a booze-soaked party goes awry.',
-  Genre: {
-    Name: 'Comedy',
-    Description: 'Movies intended to elicit laughter.'
-  },
-  Director: {
-    Name: 'Greg Mottola',
-    Bio: 'Greg Mottola ids an american director.',
-    Birth: '1966',
-    Death: 'No'
-  },
-  ImagePath: 'superbad.png',
-  Featured: true
-},
-{
-  _id: ("648b5b0f8d925836d83d5c24"),
-  Title: 'Shawshank Redemption',
-  Description: 'One man wrongly convicted of murder, and his path to escaping prison.',
-  Genre: {
-    Name: 'Drama/crime',
-    Description: 'Crime films, in the broadest sense, are films inspired by an analogous to the crime fiction literary genre.'
-  },
-  Director: {
-    Name: 'Frank Darabont',
-    Bio: 'Frank Darabont is an american director.',
-    Birth: '1959',
-    Death: 'No'
-  },
-  ImagePath: 'Shawshank.png',
-  Featured: true
-},
-{
-  _id: ("648b5cfd8d925836d83d5c25"),
-  Title: 'Good Will Hunting',
-  Description: 'Will Hunting, a janitor at M.I.T., has a gift for mathematics, but needs help from a psychologist to find direction in his life.',
-  Genre: {
-    Name: 'Drama',
-    Description: 'In film and television, drama is a category or genre of narrative fiction (or semi-colon) intended to be more serious than humorous in tone.'
-  },
-  Director: {
-    Name: 'Gus Van Sant',
-    Bio: 'Gus is an american director.',
-    Birth: '1952',
-    Death: 'No'
-  },
-  ImagePath: 'GWH.png',
-  Featured: true
-},
-{
-  _id: ("648b6591c193c47998e76981"),
-  Title: 'The Avengers',
-  Description: 'Earths mightiest heroes must come together and learn to fight as a team if they are going to stop the mischievous Loki and his alien army from enslaving humanity.',
-  Genre: {
-    Name: 'Action',
-    Description: 'Action fiction is a literary genre that focuses on stories that involve high-stakes, high-energy, and fast-paced events.'
-  },
-  Director: {
-    Name: 'Joss Whedon',
-    Bio: 'Joss Whedon is am american director.',
-    Birth: '1964',
-    Death: 'No'
-  },
-  ImagePath: 'Avengers.png',
-  Featured: true
-},
-{
-  _id: ("648b66b2c193c47998e76982"),
-  Title: 'Deadpool',
-  Description: 'A wisecracking mercenary gets experimented on and becomes immortal but ugly, and sets out to track down the man who ruined his looks.',
-  Genre: {
-    Name: 'Action/Comedy',
-    Description: 'Action fiction is a literary genre that focuses on stories that involve high-stakes, high-energy, and fast-paced events.'
-  },
-  Director: {
-    Name: 'Tim Miller',
-    Bio: 'Tim Miller is an american director.',
-    Birth: '1964',
-    Death: 'No'
-  },
-  ImagePath: 'Deadpool',
-  Featured: true
-},
-{
-  _id: ("648b6800c193c47998e76983"),
-  Title: 'Top Gun',
-  Description: 'As students at the United States Navys elite fighter weapons school compete to be best in the class, one daring young pilot learns a few things from a civilian instructor that are not taught in the classroom.',
-  Genre: {
-    Name: 'Action',
-    Description: 'Action fiction is a literary genre that focuses on stories that involve high-stakes, high-energy, and fast-paced events.'
-  },
-  Director: {
-    Name: 'Tony Scott',
-    Bio: 'Tony Scott was an american dorector.',
-    Birth: '1944'
-  },
-  ImagePath: 'TG.png',
-  Featured: true
-},
-{
-  _id: ("648b691ac193c47998e76984"),
-  Title: 'Dumb & Dumber',
-  Description: 'After a woman leaves a briefcase at the airport terminal, a dumb limo driver and his dumber friend set out on a hilarious cross-country road trip to Aspen to return it.',
-  Genre: {
-    Name: 'Comedy',
-    Description: 'Movies intended to elicit laughter.'
-  },
-  Director: {
-    Name: 'Peter Farelly',
-    Bio: 'Peter is an american film director.',
-    Birth: '1956',
-    Death: 'No'
-  },
-  ImagePath: 'Dumb.png',
-  Featured: true
-}
-];
+app.use(express.json());
 
 //combining morgan with the accessLogScream to log users who visit the website.
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
@@ -330,6 +128,7 @@ app.post('/users', (req, res) => {
     });
 });
 
+
 //allows users to save movies to their favorites
 app.post('/users/:Username/movies/:MovieID', (req, res) => {
   Users.findOneAndUpdate(
@@ -376,22 +175,7 @@ app.delete('/users/:id/:movieTitle', (req, res) => {
   });
 });
 
-// app.delete('/users/:id/:movieTitle', (request, response) => {
-//   const movieTitle = movies.find((movie) => {
-//     return movie.title === request.params.movieTitle;
-//   });
-
-//   let user = users.find((user) => {
-//     return user.id === request.params.id;
-//   });
-
-//   if (!movieTitle) response.status(404).send('This movie does not exist');
-//   const index = user.savedMovies.indexOf(movieTitle);
-//   user.savedMovies.splice(index, 1);
-//   response.send('This movie has been removed from your favorites');
-// });
-
-//updates a account holders username
+//updates an account holders username
 app.put('users/:Username', (req, res) => {
   Users.findOneAndUpdate(
     { Username: req.params.Username },
