@@ -149,7 +149,7 @@ app.post('/users/:Username/movies/:MovieID', (req, res) => {
 });
 
 //deletes a user by username
-app.delete('users/:Username', (req, res) => {
+app.delete('/users/:Username', (req, res) => {
   Users.findOneAndRemove({ Username: req.params.Username })
     .then((user) => {
       if (!user) {
@@ -176,7 +176,7 @@ app.delete('/users/:id/:movieTitle', (req, res) => {
 });
 
 //updates an account holders username
-app.put('users/:Username', (req, res) => {
+app.put('/users/:Username', (req, res) => {
   Users.findOneAndUpdate(
     { Username: req.params.Username },
     {
