@@ -11,10 +11,24 @@ const Users = Models.User;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+let auth = require('./auth')(app);
+const passport = require('passport');
+require('./passport');
 
 mongoose.connect('mongodb://127.0.0.1:27017/cfDB');
 
 app.use(express.json());
+
+app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Movies.find()
+    .then((movies) => {
+      res.status(201).json(movies);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
+});
 
 //combining morgan with the accessLogScream to log users who visit the website.
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {
