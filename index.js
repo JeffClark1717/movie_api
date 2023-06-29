@@ -1,4 +1,5 @@
 const express = require('express');
+const { check, validationResult } = require('express-validator');
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
@@ -6,16 +7,33 @@ const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
 const Models = require('./models.js');
+
 const Movies = Models.Movie;
 const Users = Models.User;
 
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const cors = require('cors');
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+
+mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
+      let message = 'The CORS policy for this application doesnt allow access from origin ' + origin;
+      return callback(new Error(message ), false);
+    }
+    return callback(null, true);
+  }
+}));
+
 let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
-
-mongoose.connect('mongodb://127.0.0.1:27017/cfDB');
 
 app.use(express.json());
 
@@ -115,25 +133,34 @@ app.get('/movies/directors/:directorsName', (req, res) => {
 });
 
 //creates a new user and adds them to the list of users.
-app.post('/users', (req, res) => {
-  Users.findOne({ Username: req.body.Username })
+app.post('/users', [
+  check('username', 'Username is required').isLength({ min: 5 }),
+  check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('password', 'Password is required').not().isEmpty(),
+  check('email', 'Email does not appear to be valid').isEmail()
+], (req, res) => {
+  let errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+  let hashedPassword = Users.hashPassword(req.body.password);
+  Users.findOne({ username: req.body.username })
     .then((user) => {
       if (user) {
-        return res.status(400).send(req.body.Username + 'already exists');
+        return res.status(400).send(req.body.username + ' already exists');
       } else {
-        Users.create({
-          Username: req.body.Username,
-          Password: req.body.Password,
-          Email: req.body.Email,
-          Birthday: req.body.Birthday
-        })
-          .then((user) => {
-            res.status(201).json(user);
+        Users
+          .create({
+            username: req.body.username,
+            password: hashedPassword,
+            email: req.body.email,
+            birthDate: req.body.birthDate
           })
+          .then((user) => { res.status(201).json(user) })
           .catch((error) => {
             console.error(error);
             res.status(500).send('Error: ' + error);
-          });
+          })
       }
     })
     .catch((error) => {
@@ -141,6 +168,7 @@ app.post('/users', (req, res) => {
       res.status(500).send('Error: ' + error);
     });
 });
+
 
 
 //allows users to save movies to their favorites
@@ -220,6 +248,12 @@ app.use((err, req, res, next) => {
 });
 
 //if everything functions correctly this message is logged from port 8080 thats listening.
-app.listen(8080, () => {
-  console.log('Your app is listening on port 8080.');
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0',() => {
+ console.log('Listening on Port ' + port);
 });
+
+
+
+
+mongoimport --uri mongodb+srv://jeffclark1717:<Ikicas77!>@cluster0.miauyxq.mongodb.net/<myFlixDB> --collection <users> --type <JSON> --file <movie_api>
