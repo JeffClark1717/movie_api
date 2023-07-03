@@ -1,16 +1,15 @@
-const express = require('express');
-const { check, validationResult } = require('express-validator');
-const morgan = require('morgan');
-const fs = require('fs');
-const path = require('path');
-const bodyParser = require('body-parser');
-const app = express();
+const express = require('express'),
+  morgan = require('morgan'),
+  fs = require('fs'),
+  path = require('path'),
+  bodyParser = require('body-parser'),
+  uuid = require('uuid');
+ // { check, validationResult } = require('express-validator');
 const mongoose = require('mongoose');
-const Models = require('./models.js');
+const Models = require('./models');
 
 const Movies = Models.Movie;
 const Users = Models.User;
-
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -134,15 +133,15 @@ app.get('/movies/directors/:directorsName', (req, res) => {
 
 //creates a new user and adds them to the list of users.
 app.post('/users', [
-  check('username', 'Username is required').isLength({ min: 5 }),
-  check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-  check('password', 'Password is required').not().isEmpty(),
-  check('email', 'Email does not appear to be valid').isEmail()
+  // check('username', 'Username is required').isLength({ min: 5 }),
+  // check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  // check('password', 'Password is required').not().isEmpty(),
+  // check('email', 'Email does not appear to be valid').isEmail()
 ], (req, res) => {
-  let errors = validationResult(req);
+  /* let errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
-  }
+  } */
   let hashedPassword = Users.hashPassword(req.body.password);
   Users.findOne({ username: req.body.username })
     .then((user) => {
@@ -256,4 +255,3 @@ app.listen(port, '0.0.0.0',() => {
 
 
 
-mongoimport --uri mongodb+srv://jeffclark1717:<Ikicas77!>@cluster0.miauyxq.mongodb.net/<myFlixDB> --collection <users> --type <JSON> --file <movie_api>
