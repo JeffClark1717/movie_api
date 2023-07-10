@@ -18,7 +18,7 @@ const cors = require('cors');
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
 
 //mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect( process.env.CONNECTION_URI || "mongodb://localhost:27017/cfDB", { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(cors({
   origin: (origin, callback) => {
