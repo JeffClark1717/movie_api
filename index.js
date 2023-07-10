@@ -1,10 +1,10 @@
 const express = require('express'),
+  app = express(),
   morgan = require('morgan'),
   fs = require('fs'),
   path = require('path'),
   bodyParser = require('body-parser'),
-  uuid = require('uuid');
- // { check, validationResult } = require('express-validator');
+  { check, validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const Models = require('./models');
 
@@ -17,7 +17,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const cors = require('cors');
 let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
 
-mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -133,15 +134,15 @@ app.get('/movies/directors/:directorsName', (req, res) => {
 
 //creates a new user and adds them to the list of users.
 app.post('/users', [
-  // check('username', 'Username is required').isLength({ min: 5 }),
-  // check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-  // check('password', 'Password is required').not().isEmpty(),
-  // check('email', 'Email does not appear to be valid').isEmail()
+  check('username', 'Username is required').isLength({ min: 5 }),
+  check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('password', 'Password is required').not().isEmpty(),
+  check('email', 'Email does not appear to be valid').isEmail()
 ], (req, res) => {
-  /* let errors = validationResult(req);
+  let errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
-  } */
+  } 
   let hashedPassword = Users.hashPassword(req.body.password);
   Users.findOne({ username: req.body.username })
     .then((user) => {
