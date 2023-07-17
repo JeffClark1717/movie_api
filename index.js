@@ -134,27 +134,27 @@ app.get('/movies/directors/:directorsName', (req, res) => {
 
 //creates a new user and adds them to the list of users.
 app.post('/users', [
-  check('username', 'Username is required').isLength({ min: 5 }),
-  check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-  check('password', 'Password is required').not().isEmpty(),
-  check('email', 'Email does not appear to be valid').isEmail()
+  check('Username', 'Username is required').isLength({ min: 5 }),
+  check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('Password', 'Password is required').not().isEmpty(),
+  check('Email', 'Email does not appear to be valid').isEmail()
 ], (req, res) => {
   let errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   } 
-  let hashedPassword = Users.hashPassword(req.body.password);
-  Users.findOne({ username: req.body.username })
+  let hashedPassword = Users.hashPassword(req.body.Password);
+  Users.findOne({ username: req.body.Username })
     .then((user) => {
       if (user) {
-        return res.status(400).send(req.body.username + ' already exists');
+        return res.status(400).send(req.body.Username + ' already exists');
       } else {
         Users
           .create({
-            username: req.body.username,
-            password: hashedPassword,
-            email: req.body.email,
-            birthDate: req.body.birthDate
+            Username: req.body.Username,
+            Password: hashedPassword,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
           })
           .then((user) => { res.status(201).json(user) })
           .catch((error) => {
