@@ -91,3 +91,8 @@
 127.0.0.1 - - [17/Jul/2023:17:20:14 +0000] "POST /users HTTP/1.1" 201 225 "-" "PostmanRuntime/7.32.3"
 127.0.0.1 - - [17/Jul/2023:17:23:18 +0000] "POST /users HTTP/1.1" 422 390 "-" "PostmanRuntime/7.32.3"
 127.0.0.1 - - [17/Jul/2023:17:23:36 +0000] "POST /users HTTP/1.1" 201 225 "-" "PostmanRuntime/7.32.3"
+127.0.0.1 - - [17/Jul/2023:17:53:31 +0000] "PUT /users/Testtest HTTP/1.1" 500 16 "-" "PostmanRuntime/7.32.3"
+127.0.0.1 - - [17/Jul/2023:17:56:12 +0000] "PUT /users/Testtest HTTP/1.1" 200 169 "-" "PostmanRuntime/7.32.3"
+127.0.0.1 - - [17/Jul/2023:17:58:13 +0000] "PUT /users/Testtest HTTP/1.1" 200 169 "-" "PostmanRuntime/7.32.3"
+127.0.0.1 - - [17/Jul/2023:18:00:11 +0000] "PUT /users/Testtest HTTP/1.1" 500 16 "-" "PostmanRuntime/7.32.3"
+127.0.0.1 - - [17/Jul/2023:18:01:01 +0000] "PUT /users/Testtest HTTP/1.1" 500 16 "-" "PostmanRuntime/7.32.3"

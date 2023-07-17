@@ -223,21 +223,17 @@ app.put('/users/:Username', (req, res) => {
     { Username: req.params.Username },
     {
       $set: {
-        Usermame: req.body.Username,
-        Password: req.body.Password,
+        Username: req.body.Username,
+        Password: hashedPassword,
         Email: req.body.Email,
         Birthday: req.body.Birthday
       }
     },
-    { new: true },
-    (err, updatedUser) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Error: ' + err);
-      } else {
-        res.json(updateUser);
+    { new: true }).then (
+    (updatedUser) => {
+
+        res.json(updatedUser);
       }
-    }
   );
 });
 
