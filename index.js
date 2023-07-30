@@ -37,7 +37,7 @@ require('./passport');
 
 app.use(express.json());
 
-app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/movies', (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
@@ -224,7 +224,7 @@ app.put('/users/:Username', (req, res) => {
     {
       $set: {
         Username: req.body.Username,
-        Password: hashedPassword,
+        Password: req.body.hashedPassword,
         Email: req.body.Email,
         Birthday: req.body.Birthday
       }
