@@ -169,8 +169,6 @@ app.post('/users', [
     });
 });
 
-
-
 //allows users to save movies to their favorites
 app.post('/users/:Username/movies/:MovieID', (req, res) => {
   Users.findOneAndUpdate(
@@ -178,16 +176,32 @@ app.post('/users/:Username/movies/:MovieID', (req, res) => {
     {
       $push: { FavoriteMovies: req.params.MovieID }
     },
-    { new: true }).then( //This line makes sure the updated document is returned
-    (updatedUser) => {
-      if (err) {
+    { new: true},
+    ).then(
+        (updatedUser) => {
+                res.json(updatedUser);
+        })
+      .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+          });
+});
+
+//allows users to delete movies from their favorites
+app.delete('/users/:Username/movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate(
+    { Username: req.params.Username },
+    {
+      $pull: { FavoriteMovies: req.params.MovieID }
+    },
+    ).then (
+        (updatedUser) => {   
+          res.json(updatedUser);
+        })
+    .catch((err) => {
         console.error(err);
         res.status(500).send('Error: ' + err);
-      } else {
-        res.json(updatedUser);
-      }
-    }
-  );
+      });
 });
 
 //deletes a user by username
@@ -204,25 +218,6 @@ app.delete('/users/:Username', (req, res) => {
       console.error(err);
       res.status(500).send('Error: ' + err);
     });
-});
-
-//allows users to delete movies from their favorites
-app.delete('/users/:Username/movies/:MovieID', (req, res) => {
-  Users.findOneAndUpdate(
-    { Username: req.params.Username },
-    {
-      $pull: { FavoriteMovies: req.params.MovieID }
-    },
-    { new: true }).then( //This line makes sure the updated document is returned
-    (updatedUser) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Error: ' + err);
-      } else {
-        res.json(updatedUser);
-      }
-    }
-  );
 });
 
 //updates an account holders username
@@ -245,7 +240,7 @@ app.put('/users/:Username', (req, res) => {
   );
 });
 
-//this is a error code to dectect erros in the code above.
+//this is a error code to dectect errors in the code above.
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
