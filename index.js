@@ -37,7 +37,7 @@ require('./passport');
 
 app.use(express.json());
 
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
@@ -207,14 +207,22 @@ app.delete('/users/:Username', (req, res) => {
 });
 
 //allows users to delete movies from their favorites
-app.delete('/users/:id/:movieTitle', (req, res) => {
-  Movies.findOneAndRemove({ Title: req.params.movieTitle }).then((movies) => {
-    if (!movies) {
-      res.status(400).send(req.params.movieTitle + 'was not found');
-    } else {
-      res.status(200).send(req.params.movieTitle + ' was deleted');
+app.delete('/users/:Username/:MovieID', (req, res) => {
+  Users.findOneAndUpdate(
+    { Username: req.params.Username },
+    {
+      $pull: { FavoriteMovies: req.params.MovieID }
+    },
+    { new: true }, //This line makes sure the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
     }
-  });
+  );
 });
 
 //updates an account holders username
