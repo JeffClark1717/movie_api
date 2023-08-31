@@ -178,8 +178,8 @@ app.post('/users/:Username/movies/:MovieID', (req, res) => {
     {
       $push: { FavoriteMovies: req.params.MovieID }
     },
-    { new: true }, //This line makes sure the updated document is returned
-    (err, updatedUser) => {
+    { new: true }).then( //This line makes sure the updated document is returned
+    (updatedUser) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error: ' + err);
@@ -213,8 +213,8 @@ app.delete('/users/:Username/movies/:MovieID', (req, res) => {
     {
       $pull: { FavoriteMovies: req.params.MovieID }
     },
-    { new: true }, //This line makes sure the updated document is returned
-    (err, updatedUser) => {
+    { new: true }).then( //This line makes sure the updated document is returned
+    (updatedUser) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error: ' + err);
