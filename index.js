@@ -207,7 +207,7 @@ app.delete('/users/:Username', (req, res) => {
 });
 
 //allows users to delete movies from their favorites
-app.delete('/users/:Username/:MovieID', (req, res) => {
+app.delete('/users/:Username/movies/:MovieID', (req, res) => {
   Users.findOneAndUpdate(
     { Username: req.params.Username },
     {
