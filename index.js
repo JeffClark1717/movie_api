@@ -57,7 +57,7 @@ app.use(morgan('combined', { stream: accessLogStream }));
 //automatically sends all files that are requested from within the public folder.
 app.use(express.static('public'));
 
-//this setups a message once the user goes to the home page of the website.
+//this sets up a message once the user goes to the home page of the website.
 app.get('/', (request, response) => {
   response.send('Welcome to Notflix!');
 });
@@ -224,6 +224,26 @@ app.delete('/users/:Username', (req, res) => {
 app.put('/users/:Username', (req, res) => {
   Users.findOneAndUpdate(
     { Username: req.params.Username },
+    {
+      $set: {
+        Username: req.body.Username,
+        Password: req.body.hashedPassword,
+        Email: req.body.Email,
+        Birthday: req.body.Birthday
+      }
+    },
+    { new: true }).then (
+    (updatedUser) => {
+
+        res.json(updatedUser);
+      }
+  );
+});
+
+//updates an account holders password
+app.put('/users/:Password', (req, res) => {
+  Users.findOneAndUpdate(
+    { Username: req.params.Password },
     {
       $set: {
         Username: req.body.Username,
