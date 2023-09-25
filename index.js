@@ -223,15 +223,13 @@ app.delete('/users/:Username', (req, res) => {
 //updates an account holders username and password
 app.put('/users/:Username', (req, res) => {
   Users.findOneAndUpdate(
-    { Username: req.params.Username },
-    { Password: req.body.hashedPassword },
-    {
+    { Username: req.params.Username },{
       $set: {
         Username: req.body.Username,
-        Password: req.body.hashedPassword,
+        Password: Users.hashPassword(req.body.Password),
         Email: req.body.Email,
-        Birthday: req.body.Birthday
-      }
+        Birthday: req.body.Birthday,
+      },
     },
     { new: true }).then (
     (updatedUser) => {
