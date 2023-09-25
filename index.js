@@ -169,7 +169,7 @@ app.post('/users', [
     });
 });
 
-//allows users to save movies to their favorites
+//allows users to add movies to their favorites
 app.post('/users/:Username/movies/:MovieID', (req, res) => {
   Users.findOneAndUpdate(
     { Username: req.params.Username },
@@ -194,7 +194,8 @@ app.delete('/users/:Username/movies/:MovieID', (req, res) => {
     {
       $pull: { FavoriteMovies: req.params.MovieID }
     },
-    ).then (
+    { new: true},
+    ).then(
         (updatedUser) => {   
           res.json(updatedUser);
         })
